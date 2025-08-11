@@ -2,6 +2,7 @@ package br.com.hadryan.api.account;
 
 import br.com.hadryan.api.customer.Customer;
 import br.com.hadryan.api.field.Field;
+import br.com.hadryan.api.order.Order;
 import br.com.hadryan.api.purchase.Purchase;
 import br.com.hadryan.api.transaction.Transaction;
 import br.com.hadryan.api.user.User;
@@ -17,7 +18,7 @@ import java.util.UUID;
 public class Account {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
@@ -46,6 +47,9 @@ public class Account {
 
     @OneToMany
     private List<Purchase> purchases;
+
+    @OneToMany
+    private List<Order> orders;
 
     public UUID getId() {
         return id;
@@ -123,6 +127,14 @@ public class Account {
 
     public void setPurchases(List<Purchase> purchases) {
         this.purchases = purchases;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     @Override
