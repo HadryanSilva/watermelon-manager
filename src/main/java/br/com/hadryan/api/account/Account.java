@@ -2,8 +2,10 @@ package br.com.hadryan.api.account;
 
 import br.com.hadryan.api.customer.Customer;
 import br.com.hadryan.api.field.Field;
+import br.com.hadryan.api.purchase.Purchase;
 import br.com.hadryan.api.transaction.Transaction;
 import br.com.hadryan.api.user.User;
+import br.com.hadryan.api.vendor.Vendor;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -38,6 +40,12 @@ public class Account {
 
     @OneToMany
     private List<Field> fields;
+
+    @OneToMany
+    private List<Vendor> vendors;
+
+    @OneToMany
+    private List<Purchase> purchases;
 
     public UUID getId() {
         return id;
@@ -101,6 +109,20 @@ public class Account {
 
     public void setFields(List<Field> fields) {
         this.fields = fields;
+    }
+
+    public List<Vendor> getVendors() { return vendors; }
+
+    public void setVendors(List<Vendor> vendors) {
+        this.vendors = vendors;
+    }
+
+    public List<Purchase> getPurchases() {
+        return purchases;
+    }
+
+    public void setPurchases(List<Purchase> purchases) {
+        this.purchases = purchases;
     }
 
     @Override
