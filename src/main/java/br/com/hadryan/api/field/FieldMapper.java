@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface FieldMapper {
 
     @Mapping(target = "id",  ignore = true)
+    @Mapping(target = "account",  ignore = true)
     Field postToField(FieldPostRequest request);
 
     FieldResponse fieldToResponse(Field field);
