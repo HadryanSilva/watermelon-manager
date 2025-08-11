@@ -1,0 +1,28 @@
+package br.com.hadryan.api.field;
+
+import br.com.hadryan.api.account.AccountService;
+import org.springframework.stereotype.Service;
+
+@Service
+public class FieldService {
+
+    private final FieldRepository fieldRepository;
+    private final AccountService accountService;
+
+    public FieldService(FieldRepository fieldRepository,  AccountService accountService) {
+        this.fieldRepository = fieldRepository;
+        this.accountService = accountService;
+    }
+
+    public Field getById(Long id) {
+        return fieldRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Field not found"));
+    }
+
+    public Field save(Long accountId, Field field) {
+        var account = accountService.findById(accountId);
+        field.setAccount(account);
+        return fieldRepository.save(field);
+    }
+
+}
