@@ -3,6 +3,7 @@ package br.com.hadryan.api.auth.config;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,8 +44,10 @@ public class SecurityConfig {
                         .sessionRegistry(sessionRegistry()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/login").permitAll()
-                        .requestMatchers("/api/v1/users/create").permitAll()
+                        .requestMatchers("/api/v1/users/register").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users/create-internal").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/*/roles").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(customAuthenticationEntryPoint())

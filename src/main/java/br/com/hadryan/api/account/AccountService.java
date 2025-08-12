@@ -22,8 +22,8 @@ public class AccountService {
         return accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
     }
 
-    public void save(Account account) {
-        accountRepository.save(account);
+    public Account save(Account account) {
+        return accountRepository.save(account);
     }
 
     @EventListener

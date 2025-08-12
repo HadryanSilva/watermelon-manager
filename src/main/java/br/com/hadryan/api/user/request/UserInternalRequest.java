@@ -1,35 +1,38 @@
 package br.com.hadryan.api.user.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
-import java.util.UUID;
+import java.util.List;
 
-public class UserPostRequest {
+public class UserInternalRequest {
 
-    private UUID accountId;
-
-    @NotBlank
+    @NotBlank(message = "First name is required")
+    @Size(max = 50)
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "Last name is required")
+    @Size(max = 50)
     private String lastName;
 
+    @Size(max = 11)
     private String phone;
 
-    @NotBlank
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    @Size(max = 100)
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must have at least 8 characters")
     private String password;
 
-    public UUID getAccountId() {
-        return accountId;
-    }
+    @NotEmpty(message = "At least one role must be specified")
+    private List<String> roles;
 
-    public void setAccountId(UUID accountId) {
-        this.accountId = accountId;
-    }
-
+    // Getters e Setters
     public String getFirstName() {
         return firstName;
     }
@@ -68,5 +71,13 @@ public class UserPostRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }

@@ -1,7 +1,6 @@
 package br.com.hadryan.api.user;
 
-import br.com.hadryan.api.user.request.UserPostRequest;
-import br.com.hadryan.api.user.request.UserPutRequest;
+import br.com.hadryan.api.user.request.*;
 import br.com.hadryan.api.user.response.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -28,19 +27,56 @@ public class UserController {
         return ResponseEntity.ok(userMapper.userToResponse(userFound));
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<UserResponse> create(@Valid @RequestBody UserPostRequest request) {
-        var userToSave = userMapper.postToUser(request);
-        var userCreated = userService.create(request.getAccountId(), userToSave);
+    /**
+     * Public Register - Creates ADMIN user with Account
+     * Only used to create an initial user
+     */
+    @PostMapping("/register")
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegisterRequest request) {
+        User userToRegister = userMapper.registerToUser(request);
+        User userCreated = userService.registerNewAdmin(userToRegister);
+
         return ResponseEntity
                 .created(URI.create("/api/v1/users/" + userCreated.getId()))
                 .body(userMapper.userToResponse(userCreated));
     }
 
-    @PutMapping("/edit")
+    /**
+     * Criação interna - Adiciona usuário à conta atual
+     * Requer autenticação e permissão ADMIN
+     */
+    @PostMapping("/create-internal")
+    public ResponseEntity<UserResponse> createInternal(@Valid @RequestBody UserInternalRequest request) {
+        User userToCreate = userMapper.internalToUser(request);
+        User userCreated = userService.createInternalUser(userToCreate, request.getRoles());
+
+        return ResponseEntity
+                .created(URI.create("/api/v1/users/" + userCreated.getId()))
+                .body(userMapper.userToResponse(userCreated));
+    }
+
+    /**
+     * Atualizar usuário
+     * Usuário pode atualizar próprios dados
+     * ADMIN pode atualizar usuários da mesma conta
+     */
+    @PutMapping("/update")
     public ResponseEntity<UserResponse> update(@Valid @RequestBody UserPutRequest request) {
-        var userToUpdate = userMapper.putToUser(request);
-        var userUpdated = userService.update(userToUpdate);
+        User userToUpdate = userMapper.putToUser(request);
+        User userUpdated = userService.update(userToUpdate);
+        return ResponseEntity.ok(userMapper.userToResponse(userUpdated));
+    }
+
+    /**
+     * Atualizar roles de um usuário
+     * Apenas ADMIN pode executar
+     */
+    @PutMapping("/{id}/roles")
+    public ResponseEntity<UserResponse> updateRoles(
+            @PathVariable UUID id,
+            @Valid @RequestBody UserRolesUpdateRequest request) {
+
+        User userUpdated = userService.updateUserRoles(id, request.getRoles());
         return ResponseEntity.ok(userMapper.userToResponse(userUpdated));
     }
 
