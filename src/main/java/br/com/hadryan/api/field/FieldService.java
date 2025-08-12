@@ -2,6 +2,7 @@ package br.com.hadryan.api.field;
 
 import br.com.hadryan.api.account.AccountService;
 import br.com.hadryan.api.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class FieldService {
                 .orElseThrow(() -> new ResourceNotFoundException("Field", id));
     }
 
+    @Transactional
     public Field save(UUID accountId, Field field) {
         var account = accountService.findById(accountId);
         field.setAccount(account);

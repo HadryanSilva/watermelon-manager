@@ -50,7 +50,7 @@ public class AccountService {
         var account = accountRepository.findById(transaction.accountId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         var amount = transaction.amount();
-        account.setIncomes(account.getExpenses().add(amount));
+        account.setExpenses(account.getExpenses().add(amount));
         account.setBalance(account.getBalance().subtract(amount));
         accountRepository.save(account);
     }

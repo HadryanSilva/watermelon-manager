@@ -2,6 +2,7 @@ package br.com.hadryan.api.vendor;
 
 import br.com.hadryan.api.account.AccountService;
 import br.com.hadryan.api.exception.ResourceNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class VendorService {
                 .orElseThrow(() -> new ResourceNotFoundException("Vendor", id));
     }
 
+    @Transactional
     public Vendor save(UUID accountId, Vendor vendor) {
         var account = accountService.findById(accountId);
         vendor.setAccount(account);

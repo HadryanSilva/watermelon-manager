@@ -48,14 +48,14 @@ public class SecurityService {
 
     public boolean hasAccessToAccount(UUID accountId) {
         if (accountId == null) {
-            return true;
+            return false;
         }
 
         try {
             UUID currentAccountId = getCurrentAccountId();
-            return !currentAccountId.equals(accountId);
+            return currentAccountId.equals(accountId);
         } catch (Exception e) {
-            return true;
+            return false;
         }
     }
 
