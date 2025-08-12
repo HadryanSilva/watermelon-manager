@@ -4,6 +4,7 @@ import br.com.hadryan.api.account.Account;
 import br.com.hadryan.api.account.AccountService;
 import br.com.hadryan.api.auth.Role;
 import br.com.hadryan.api.auth.RoleRepository;
+import br.com.hadryan.api.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,7 +48,7 @@ public class UserService {
 
     public User update(User user) {
         var userFound = userRepository.findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("User not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", user.getId()));
 
         userFound.setFirstName(user.getFirstName());
         userFound.setLastName(user.getLastName());

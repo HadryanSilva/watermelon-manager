@@ -1,6 +1,7 @@
 package br.com.hadryan.api.field;
 
 import br.com.hadryan.api.account.AccountService;
+import br.com.hadryan.api.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class FieldService {
 
     public Field getById(Long id) {
         return fieldRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Field not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Field", id));
     }
 
     public Field save(UUID accountId, Field field) {

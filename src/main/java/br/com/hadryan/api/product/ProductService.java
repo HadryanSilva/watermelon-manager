@@ -1,5 +1,6 @@
 package br.com.hadryan.api.product;
 
+import br.com.hadryan.api.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +14,7 @@ public class ProductService {
 
     public Product findById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", id));
     }
 
     public Product save(Product product) {

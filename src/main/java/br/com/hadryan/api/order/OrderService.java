@@ -1,6 +1,7 @@
 package br.com.hadryan.api.order;
 
 import br.com.hadryan.api.customer.CustomerRepository;
+import br.com.hadryan.api.exception.ResourceNotFoundException;
 import br.com.hadryan.api.field.FieldRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,7 @@ public class OrderService {
 
     public Order findById(Long id) {
         return orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order", id));
     }
 
     public Order save(Long customerId, Long fieldId, Order order) {
@@ -29,11 +30,11 @@ public class OrderService {
             order.setOrderStatus(OrderStatus.RECEIVED);
         }
         var customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", customerId));
         order.setCustomer(customer);
 
         var  field = fieldRepository.findById(fieldId)
-                .orElseThrow(() -> new RuntimeException("Field Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Field", fieldId));
 
         order.setField(field);
         return orderRepository.save(order);

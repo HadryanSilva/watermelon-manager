@@ -23,14 +23,14 @@ public class AuthController {
         var authentication = sessionService.authenticate(new UsernamePasswordAuthenticationToken(
                 loginRequest.email(), loginRequest.password()));
 
-        var session = sessionService.createNewSession(authentication, request);
-        return ResponseEntity.ok(new AuthResponse("Login Successful", session.getId()));
+        sessionService.createNewSession(authentication, request);
+        return ResponseEntity.ok(new AuthResponse("Login Successful"));
     }
 
     @GetMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         sessionService.logout(request.getSession());
-        return ResponseEntity.ok(new AuthResponse("Logout Successful", null));
+        return ResponseEntity.ok(new AuthResponse("Logout Successful"));
     }
 
 }

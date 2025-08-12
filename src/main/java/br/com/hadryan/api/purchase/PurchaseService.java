@@ -1,5 +1,6 @@
 package br.com.hadryan.api.purchase;
 
+import br.com.hadryan.api.exception.ResourceNotFoundException;
 import br.com.hadryan.api.product.ProductRepository;
 import br.com.hadryan.api.purchase.enums.Status;
 import jakarta.transaction.Transactional;
@@ -29,27 +30,27 @@ public class PurchaseService {
 
     public Purchase findById(Long id) {
         return purchaseRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Purchase with id " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase", id));
     }
 
     @Transactional
     public Purchase save(List<Item> items, Purchase purchase) {
-        var savedItems = saveItems(items);
         purchase.setStatus(Status.CREATED);
         var purchaseSaved = purchaseRepository.save(purchase);
+
+        var savedItems = saveItems(items, purchaseSaved);
         purchaseSaved.setItems(savedItems);
         return purchaseSaved;
     }
 
-    private List<Item> saveItems(List<Item> items) {
+    private List<Item> saveItems(List<Item> items, Purchase purchase) {
         log.info("Saving purchase items...");
         List<Item> savedItems = new ArrayList<>();
         items.forEach(item -> {
             var product = productRepository.findById(item.getProduct().getId())
-                    .orElseThrow(
-                            () -> new RuntimeException("Product with id " + item.getProduct().getId() + " not found")
-                    );
+                    .orElseThrow(() -> new ResourceNotFoundException("Product", item.getProduct().getId()));
             item.setProduct(product);
+            item.setPurchase(purchase);
             var itemSaved = itemRepository.save(item);
             savedItems.add(itemSaved);
         });

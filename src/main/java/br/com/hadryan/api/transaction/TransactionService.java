@@ -1,6 +1,7 @@
 package br.com.hadryan.api.transaction;
 
 import br.com.hadryan.api.account.AccountService;
+import br.com.hadryan.api.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,7 +29,7 @@ public class TransactionService {
     }
 
     public Transaction findById(Long id) {
-        return transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction not found"));
+        return transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Transaction", id));
     }
 
     public Transaction save(UUID accountId, Transaction transaction) {

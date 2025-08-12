@@ -1,6 +1,7 @@
 package br.com.hadryan.api.vendor;
 
 import br.com.hadryan.api.account.AccountService;
+import br.com.hadryan.api.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class VendorService {
 
     public Vendor findById(Long id) {
         return vendorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vendor Not Found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vendor", id));
     }
 
     public Vendor save(UUID accountId, Vendor vendor) {
