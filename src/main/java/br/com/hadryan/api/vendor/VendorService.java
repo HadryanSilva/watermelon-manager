@@ -46,7 +46,7 @@ public class VendorService {
 
         var existing = findById(vendorUpdate.getId());
 
-        if (existing.getPhone().equals(vendorUpdate.getPhone())) {
+        if (!existing.getPhone().equals(vendorUpdate.getPhone())) {
             validatePhoneUnique(vendorUpdate.getPhone(), vendorUpdate.getId());
         }
 

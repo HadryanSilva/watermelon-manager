@@ -60,7 +60,7 @@ public class SecurityService {
     }
 
     public void validateAccountAccess(UUID accountId) {
-        if (hasAccessToAccount(accountId)) {
+        if (!hasAccessToAccount(accountId)) {
             throw new AccessDeniedException("Access denied to this account's resources");
         }
     }

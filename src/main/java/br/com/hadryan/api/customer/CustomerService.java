@@ -31,7 +31,7 @@ public class CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", id));
 
         UUID customerAccountId = customer.getAccount().getId();
-        if (securityService.hasAccessToAccount(customerAccountId)) {
+        if (!securityService.hasAccessToAccount(customerAccountId)) {
             log.warn("User tried to access customer {} from different account", id);
             throw new AccessDeniedException("You don't have access to this customer");
         }
