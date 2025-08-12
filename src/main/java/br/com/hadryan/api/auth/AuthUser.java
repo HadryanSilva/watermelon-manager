@@ -5,25 +5,17 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class AuthUser implements UserDetails {
-
-    private final String email;
-
-    private final String password;
-
-    private final Collection<? extends GrantedAuthority> authorities;
-
-    public AuthUser(String email,
-                    String password,
-                    Collection<? extends GrantedAuthority> authorities) {
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
-    }
+public record AuthUser(String email, String password,
+                       Collection<? extends GrantedAuthority> authorities) implements UserDetails {
 
     public static AuthUser create(User user) {
-        return new AuthUser(user.getEmail(), user.getPassword(), user.getRoles());
+        List<SimpleRole> simpleRoles = user.getRoles().stream()
+                .map(role -> new SimpleRole(role.getAuthority()))
+                .collect(Collectors.toList());
+        return new AuthUser(user.getEmail(), user.getPassword(), simpleRoles);
     }
 
     @Override

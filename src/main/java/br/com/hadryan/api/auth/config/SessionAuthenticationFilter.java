@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNullApi;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -105,10 +106,10 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
         String method = request.getMethod();
 
         String[] publicEndpoints = {
-                "/api/v1/auth/",
+                "/api/v1/auth/**",
                 "/api/v1/users/register",
-                "/swagger-ui/",
-                "/v3/api-docs/",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
                 "/actuator/health"
         };
 

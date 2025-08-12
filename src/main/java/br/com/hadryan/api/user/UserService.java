@@ -31,7 +31,8 @@ public class UserService {
     }
 
     public User findById(UUID id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", id.toString()));
     }
 
     @Transactional

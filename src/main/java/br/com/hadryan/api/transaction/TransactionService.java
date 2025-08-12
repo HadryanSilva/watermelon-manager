@@ -29,7 +29,8 @@ public class TransactionService {
     }
 
     public Transaction findById(Long id) {
-        return transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Transaction", id));
+        return transactionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction", id));
     }
 
     public Transaction save(UUID accountId, Transaction transaction) {

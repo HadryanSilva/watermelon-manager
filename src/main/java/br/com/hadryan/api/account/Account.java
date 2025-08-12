@@ -10,6 +10,7 @@ import br.com.hadryan.api.vendor.Vendor;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -31,25 +32,25 @@ public class Account {
     private BigDecimal expenses;
 
     @OneToMany(mappedBy = "account")
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
-    private List<Transaction> transactions;
+    private List<Transaction> transactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
-    private List<Customer> customers;
+    private List<Customer> customers = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
-    private List<Field> fields;
+    private List<Field> fields = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
-    private List<Vendor> vendors;
+    private List<Vendor> vendors = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
-    private List<Purchase> purchases;
+    private List<Purchase> purchases = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
 
     public UUID getId() {
         return id;

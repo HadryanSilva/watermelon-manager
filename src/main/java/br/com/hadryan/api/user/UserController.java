@@ -28,7 +28,7 @@ public class UserController {
         return ResponseEntity.ok(userMapper.userToResponse(userFound));
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<UserResponse> create(@Valid @RequestBody UserPostRequest request) {
         var userToSave = userMapper.postToUser(request);
         var userCreated = userService.create(request.getAccountId(), userToSave);

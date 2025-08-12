@@ -4,6 +4,7 @@ import br.com.hadryan.api.account.Account;
 import br.com.hadryan.api.auth.Role;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -34,7 +35,7 @@ public class User {
     private Account account;
 
     @ManyToMany
-    private List<Role> roles;
+    private List<Role> roles =  new ArrayList<>();
 
     public UUID getId() {
         return id;
