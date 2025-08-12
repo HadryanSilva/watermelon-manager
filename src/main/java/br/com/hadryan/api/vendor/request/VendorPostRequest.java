@@ -5,11 +5,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import java.util.UUID;
+
 public record VendorPostRequest(
         @NotNull
-        Long accountId,
+        UUID accountId,
+
         @NotBlank
         String name,
+
         String location,
 
         @Pattern(regexp = "^\\(?\\d{2}\\)?\\s?(?:9\\d{4}|\\d{4})-?\\d{4}$\n")

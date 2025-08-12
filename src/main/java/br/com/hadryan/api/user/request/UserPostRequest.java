@@ -2,9 +2,11 @@ package br.com.hadryan.api.user.request;
 
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.UUID;
+
 public class UserPostRequest {
 
-    private Long accountId;
+    private UUID accountId;
 
     @NotBlank
     private String firstName;
@@ -20,11 +22,11 @@ public class UserPostRequest {
     @NotBlank
     private String password;
 
-    public Long getAccountId() {
+    public UUID getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Long accountId) {
+    public void setAccountId(UUID accountId) {
         this.accountId = accountId;
     }
 

@@ -7,11 +7,12 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class TransactionPostRequest {
 
     @NotNull
-    private Long accountId;
+    private UUID accountId;
 
     @NotBlank
     private String name;
@@ -30,11 +31,11 @@ public class TransactionPostRequest {
     @NotNull
     private LocalDate date;
 
-    public Long getAccountId() {
+    public UUID getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Long accountId) {
+    public void setAccountId(UUID accountId) {
         this.accountId = accountId;
     }
 

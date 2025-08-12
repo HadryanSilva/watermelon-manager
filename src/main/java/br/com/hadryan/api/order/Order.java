@@ -37,7 +37,7 @@ public class Order {
     @Column(length = 10)
     private String transportationPlate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 

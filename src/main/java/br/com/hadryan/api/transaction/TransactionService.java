@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class TransactionService {
 
@@ -29,7 +31,7 @@ public class TransactionService {
         return transactionRepository.findById(id).orElseThrow(() -> new RuntimeException("Transaction not found"));
     }
 
-    public Transaction save(Long accountId, Transaction transaction) {
+    public Transaction save(UUID accountId, Transaction transaction) {
         var account = accountService.findById(accountId);
         transaction.setAccount(account);
         var transactionSaved = transactionRepository.save(transaction);

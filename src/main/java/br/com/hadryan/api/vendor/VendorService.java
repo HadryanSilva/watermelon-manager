@@ -3,6 +3,8 @@ package br.com.hadryan.api.vendor;
 import br.com.hadryan.api.account.AccountService;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class VendorService {
 
@@ -19,7 +21,7 @@ public class VendorService {
                 .orElseThrow(() -> new RuntimeException("Vendor Not Found"));
     }
 
-    public Vendor save(Long accountId, Vendor vendor) {
+    public Vendor save(UUID accountId, Vendor vendor) {
         var account = accountService.findById(accountId);
         vendor.setAccount(account);
         return vendorRepository.save(vendor);

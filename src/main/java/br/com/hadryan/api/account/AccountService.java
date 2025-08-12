@@ -1,11 +1,12 @@
 package br.com.hadryan.api.account;
 
 import br.com.hadryan.api.transaction.TransactionDTO;
-import br.com.hadryan.api.transaction.enums.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class AccountService {
@@ -17,7 +18,7 @@ public class AccountService {
         this.accountRepository = accountRepository;
     }
 
-    public Account findById(Long id) {
+    public Account findById(UUID id) {
         return accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
     }
 
@@ -29,16 +30,14 @@ public class AccountService {
     public void updateAccountBalance(TransactionDTO transaction) {
         log.info("Updating account balance...");
         switch (transaction.type()) {
-            case Type.INCOME:
-                processAccountIncome(transaction);
-            case Type.EXPENSE:
-                processAccountExpense(transaction);
+            case INCOME -> processAccountIncome(transaction);
+            case EXPENSE -> processAccountExpense(transaction);
         }
     }
 
     private void processAccountIncome(TransactionDTO transaction) {
         log.info("Transaction was identified as income, processing...");
-        var account = accountRepository.findById(transaction.id())
+        var account = accountRepository.findById(transaction.accountId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         var amount = transaction.amount();
         account.setIncomes(account.getIncomes().add(amount));
@@ -48,7 +47,7 @@ public class AccountService {
 
     private void processAccountExpense(TransactionDTO transaction) {
         log.info("Transaction was identified as expense, processing...");
-        var account = accountRepository.findById(transaction.id())
+        var account = accountRepository.findById(transaction.accountId())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         var amount = transaction.amount();
         account.setIncomes(account.getExpenses().add(amount));

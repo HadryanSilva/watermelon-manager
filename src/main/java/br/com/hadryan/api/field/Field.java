@@ -31,7 +31,7 @@ public class Field {
 
     private LocalDate finishDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 

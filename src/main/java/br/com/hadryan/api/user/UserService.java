@@ -4,6 +4,8 @@ import br.com.hadryan.api.account.Account;
 import br.com.hadryan.api.account.AccountService;
 import br.com.hadryan.api.auth.Role;
 import br.com.hadryan.api.auth.RoleRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,23 +17,28 @@ public class UserService {
     private final UserRepository userRepository;
     private final AccountService accountService;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository,
                        AccountService accountService,
-                       RoleRepository roleRepository) {
+                       RoleRepository roleRepository,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.accountService = accountService;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User findById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
     }
 
-    public User create(Long accountId, User user) {
+    @Transactional
+    public User create(UUID accountId, User user) {
         var account = handleAccountCreation(accountId);
         user.setAccount(account);
         handleUserRoleCreation(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         var userSaved = userRepository.save(user);
         account.getUsers().add(userSaved);
         accountService.save(account);
@@ -46,11 +53,11 @@ public class UserService {
         userFound.setLastName(user.getLastName());
         userFound.setPhone(user.getPhone());
         userFound.setEmail(user.getEmail());
-        userFound.setPassword(user.getPassword());
+        userFound.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(userFound);
     }
 
-    private Account handleAccountCreation(Long accountId) {
+    private Account handleAccountCreation(UUID accountId) {
         if (accountId != null) {
             return accountService.findById(accountId);
         }

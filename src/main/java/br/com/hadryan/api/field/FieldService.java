@@ -3,6 +3,8 @@ package br.com.hadryan.api.field;
 import br.com.hadryan.api.account.AccountService;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class FieldService {
 
@@ -19,7 +21,7 @@ public class FieldService {
                 .orElseThrow(() -> new RuntimeException("Field not found"));
     }
 
-    public Field save(Long accountId, Field field) {
+    public Field save(UUID accountId, Field field) {
         var account = accountService.findById(accountId);
         field.setAccount(account);
         return fieldRepository.save(field);
