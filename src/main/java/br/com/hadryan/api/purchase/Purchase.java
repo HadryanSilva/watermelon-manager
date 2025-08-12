@@ -20,7 +20,7 @@ public class Purchase {
 
     private String description;
 
-    @OneToMany
+    @OneToMany(mappedBy = "purchase")
     private List<Item> items;
 
     @Column(nullable = false)
@@ -30,6 +30,7 @@ public class Purchase {
     private Status status;
 
     @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     public Long getId() {

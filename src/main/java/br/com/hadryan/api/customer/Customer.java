@@ -1,5 +1,6 @@
 package br.com.hadryan.api.customer;
 
+import br.com.hadryan.api.account.Account;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -22,6 +23,10 @@ public class Customer {
 
     @Column(length = 100)
     private String location;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     public Long getId() {
         return id;
@@ -61,6 +66,14 @@ public class Customer {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     @Override

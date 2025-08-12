@@ -2,6 +2,8 @@ package br.com.hadryan.api.user;
 
 import br.com.hadryan.api.account.Account;
 import br.com.hadryan.api.account.AccountService;
+import br.com.hadryan.api.auth.Role;
+import br.com.hadryan.api.auth.RoleRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,10 +14,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AccountService accountService;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository,  AccountService accountService) {
+    public UserService(UserRepository userRepository,
+                       AccountService accountService,
+                       RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.accountService = accountService;
+        this.roleRepository = roleRepository;
     }
 
     public User findById(UUID id) {
@@ -25,6 +31,7 @@ public class UserService {
     public User create(Long accountId, User user) {
         var account = handleAccountCreation(accountId);
         user.setAccount(account);
+        handleUserRoleCreation(user);
         var userSaved = userRepository.save(user);
         account.getUsers().add(userSaved);
         accountService.save(account);
@@ -52,6 +59,15 @@ public class UserService {
         account.setIncomes(BigDecimal.ZERO);
         account.setExpenses(BigDecimal.ZERO);
         return account;
+    }
+
+    private void handleUserRoleCreation(User user) {
+        if (user.getRoles().isEmpty()) {
+            Role role = new Role();
+            role.setRole("ROLE_ADMIN");
+            var roleCreated = roleRepository.save(role);
+            user.getRoles().add(roleCreated);
+        }
     }
 
 }

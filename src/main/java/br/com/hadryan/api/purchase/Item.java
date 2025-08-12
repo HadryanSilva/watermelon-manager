@@ -22,6 +22,10 @@ public class Item {
 
     private BigDecimal totalPrice;
 
+    @ManyToOne
+    @JoinColumn(name = "purchase_id", nullable = false)
+    private Purchase purchase;
+
     public Long getId() {
         return id;
     }

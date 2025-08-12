@@ -1,8 +1,10 @@
 package br.com.hadryan.api.user;
 
 import br.com.hadryan.api.account.Account;
+import br.com.hadryan.api.auth.Role;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -30,6 +32,9 @@ public class User {
 
     @ManyToOne
     private Account account;
+
+    @ManyToMany
+    private List<Role> roles;
 
     public UUID getId() {
         return id;
@@ -85,6 +90,14 @@ public class User {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
     @Override

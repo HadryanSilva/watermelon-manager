@@ -1,5 +1,6 @@
 package br.com.hadryan.api.order;
 
+import br.com.hadryan.api.account.Account;
 import br.com.hadryan.api.customer.Customer;
 import br.com.hadryan.api.field.Field;
 import jakarta.persistence.*;
@@ -35,6 +36,10 @@ public class Order {
 
     @Column(length = 10)
     private String transportationPlate;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
     public Long getId() {
         return id;

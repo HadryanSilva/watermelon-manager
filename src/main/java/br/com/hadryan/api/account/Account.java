@@ -30,25 +30,25 @@ public class Account {
     @Column(nullable = false)
     private BigDecimal expenses;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private List<User> users;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private List<Customer> customers;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private List<Field> fields;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private List<Vendor> vendors;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private List<Purchase> purchases;
 
-    @OneToMany
+    @OneToMany(mappedBy = "account")
     private List<Order> orders;
 
     public UUID getId() {

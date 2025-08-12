@@ -35,6 +35,7 @@ public class Transaction {
     private LocalDate date;
 
     @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
     public Long getId() {
