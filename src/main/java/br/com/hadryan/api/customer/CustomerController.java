@@ -4,6 +4,8 @@ import br.com.hadryan.api.customer.request.CustomerPostRequest;
 import br.com.hadryan.api.customer.request.CustomerPutRequest;
 import br.com.hadryan.api.customer.response.CustomerResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +18,19 @@ public class CustomerController {
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
 
-    public CustomerController(CustomerService customerService, CustomerMapper customerMapper) {
+    public CustomerController(CustomerService customerService,
+                              CustomerMapper customerMapper) {
         this.customerService = customerService;
         this.customerMapper = customerMapper;
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<CustomerResponse>> findAllByAccount(@RequestParam(defaultValue = "0") int page,
+                                                                   @RequestParam(defaultValue = "10") int size) {
+        var customers = customerService.findAllByCurrentAccount(PageRequest.of(page, size))
+                .map(customerMapper::customerToResponse);
+
+        return ResponseEntity.ok(customers);
     }
 
     @GetMapping("/{id}")

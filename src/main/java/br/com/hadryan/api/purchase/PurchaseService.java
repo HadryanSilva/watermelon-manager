@@ -1,11 +1,14 @@
 package br.com.hadryan.api.purchase;
 
+import br.com.hadryan.api.auth.service.SecurityService;
 import br.com.hadryan.api.exception.ResourceNotFoundException;
 import br.com.hadryan.api.product.ProductRepository;
 import br.com.hadryan.api.purchase.enums.Status;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,13 +22,22 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final ItemRepository itemRepository;
     private final ProductRepository productRepository;
+    private final SecurityService securityService;
 
     public PurchaseService(PurchaseRepository purchaseRepository,
                            ItemRepository itemRepository,
-                           ProductRepository productRepository) {
+                           ProductRepository productRepository,
+                           SecurityService securityService) {
         this.purchaseRepository = purchaseRepository;
         this.itemRepository = itemRepository;
         this.productRepository = productRepository;
+        this.securityService = securityService;
+    }
+
+    public Page<Purchase> findAllByAccountId(Pageable page) {
+        var accountId = securityService.getCurrentAccountId();
+
+        return purchaseRepository.findAllByAccountWithItems(page, accountId);
     }
 
     public Purchase findById(Long id) {

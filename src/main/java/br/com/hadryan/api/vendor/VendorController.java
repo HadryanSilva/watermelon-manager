@@ -3,11 +3,10 @@ package br.com.hadryan.api.vendor;
 import br.com.hadryan.api.vendor.request.VendorPostRequest;
 import br.com.hadryan.api.vendor.request.VendorPutRequest;
 import br.com.hadryan.api.vendor.response.VendorResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/vendors")
@@ -22,11 +21,12 @@ public class VendorController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<VendorResponse>> findVendorsByAccount(@RequestParam int page,
+    public ResponseEntity<Page<VendorResponse>> findVendorsByAccount(@RequestParam int page,
                                                                      @RequestParam int size) {
-        var vendors = vendorService.findAllByCurrentAccount(PageRequest.of(page, size)).stream().toList();
+        var vendors = vendorService.findAllByCurrentAccount(PageRequest.of(page, size))
+                .map(vendorMapper::vendorToResponse);
 
-        return ResponseEntity.ok(vendorMapper.vendorsToResponse(vendors));
+        return ResponseEntity.ok(vendors);
     }
 
     @GetMapping("/{id}")

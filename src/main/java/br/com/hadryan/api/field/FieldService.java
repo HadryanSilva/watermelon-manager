@@ -7,20 +7,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class FieldService {
 
     private final FieldRepository fieldRepository;
     private final SecurityService securityService;
 
-    public FieldService(FieldRepository fieldRepository,  SecurityService securityService) {
+    public FieldService(FieldRepository fieldRepository,
+                        SecurityService securityService) {
         this.fieldRepository = fieldRepository;
         this.securityService = securityService;
     }
 
-    public Page<Field> findAllByAccountId(UUID accountId, Pageable pageable) {
+    public Page<Field> findAllByAccountId(Pageable pageable) {
+        var accountId = securityService.getCurrentAccountId();
         return fieldRepository.findByAccountId(accountId, pageable);
     }
 

@@ -2,13 +2,12 @@ package br.com.hadryan.api.field;
 
 import br.com.hadryan.api.field.request.FieldPostRequest;
 import br.com.hadryan.api.field.response.FieldResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/fields")
@@ -22,13 +21,11 @@ public class FieldController {
         this.fieldMapper = fieldMapper;
     }
 
-    @GetMapping("/list/{accountId}")
-    public ResponseEntity<List<FieldResponse>> findAllByAccountId(@RequestParam int page,
-                                                                  @RequestParam int size,
-                                                                  @PathVariable UUID accountId) {
-        var fields = fieldService.findAllByAccountId(accountId, PageRequest.of(page, size))
-                .map(fieldMapper::fieldToResponse)
-                .stream().toList();
+    @GetMapping("/list")
+    public ResponseEntity<Page<FieldResponse>> findAllByAccount(@RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "10") int size) {
+        var fields = fieldService.findAllByAccountId(PageRequest.of(page, size))
+                .map(fieldMapper::fieldToResponse);
 
         return ResponseEntity.ok(fields);
 

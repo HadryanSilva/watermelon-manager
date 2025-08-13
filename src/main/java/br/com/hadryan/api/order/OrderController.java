@@ -3,6 +3,8 @@ package br.com.hadryan.api.order;
 import br.com.hadryan.api.order.request.OrderPostRequest;
 import br.com.hadryan.api.order.response.OrderResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +17,19 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderMapper orderMapper;
 
-    public OrderController(OrderService orderService,  OrderMapper orderMapper) {
+    public OrderController(OrderService orderService,
+                           OrderMapper orderMapper) {
         this.orderService = orderService;
         this.orderMapper = orderMapper;
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<OrderResponse>> findAllByAccount(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int size) {
+        var orders = orderService.findAllByAccountId(PageRequest.of(page, size))
+                .map(orderMapper::orderToResponse);
+
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/{id}")

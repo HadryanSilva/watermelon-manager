@@ -13,6 +13,6 @@ public interface PurchaseMapper {
     @Mapping(target = "items", ignore = true)
     Purchase postToPurchase(PurchasePostRequest request);
 
-    PurchaseResponse postToResponse(Purchase purchase);
+    PurchaseResponse purchaseToResponse(Purchase purchase);
 
 }
