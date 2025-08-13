@@ -1,8 +1,10 @@
 package br.com.hadryan.api.field;
 
-import br.com.hadryan.api.account.AccountService;
+import br.com.hadryan.api.auth.service.SecurityService;
 import br.com.hadryan.api.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -11,11 +13,15 @@ import java.util.UUID;
 public class FieldService {
 
     private final FieldRepository fieldRepository;
-    private final AccountService accountService;
+    private final SecurityService securityService;
 
-    public FieldService(FieldRepository fieldRepository,  AccountService accountService) {
+    public FieldService(FieldRepository fieldRepository,  SecurityService securityService) {
         this.fieldRepository = fieldRepository;
-        this.accountService = accountService;
+        this.securityService = securityService;
+    }
+
+    public Page<Field> findAllByAccountId(UUID accountId, Pageable pageable) {
+        return fieldRepository.findByAccountId(accountId, pageable);
     }
 
     public Field getById(Long id) {
@@ -24,8 +30,8 @@ public class FieldService {
     }
 
     @Transactional
-    public Field save(UUID accountId, Field field) {
-        var account = accountService.findById(accountId);
+    public Field save(Field field) {
+        var account = securityService.getCurrentAccount();
         field.setAccount(account);
         return fieldRepository.save(field);
     }
