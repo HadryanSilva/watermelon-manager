@@ -16,6 +16,24 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "Account.withUsers",
+                attributeNodes = @NamedAttributeNode("users")
+        ),
+        @NamedEntityGraph(
+                name = "Account.withTransactions",
+                attributeNodes = @NamedAttributeNode("transactions")
+        ),
+        @NamedEntityGraph(
+                name = "Account.summary",
+                attributeNodes = {
+                        @NamedAttributeNode("users"),
+                        @NamedAttributeNode("customers"),
+                        @NamedAttributeNode("fields")
+                }
+        )
+})
 public class Account {
 
     @Id

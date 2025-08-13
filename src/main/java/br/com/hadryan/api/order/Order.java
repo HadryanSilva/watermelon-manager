@@ -10,6 +10,24 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity(name = "orders")
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "Order.withCustomer",
+                attributeNodes = @NamedAttributeNode("customer")
+        ),
+        @NamedEntityGraph(
+                name = "Order.withField",
+                attributeNodes = @NamedAttributeNode("field")
+        ),
+        @NamedEntityGraph(
+                name = "Order.complete",
+                attributeNodes = {
+                        @NamedAttributeNode("customer"),
+                        @NamedAttributeNode("field"),
+                        @NamedAttributeNode("account")
+                }
+        )
+})
 public class Order {
 
     @Id
@@ -20,7 +38,7 @@ public class Order {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @OneToOne
+    @OneToOne(fetch =  FetchType.LAZY)
     private Field field;
 
     @Column(nullable = false)

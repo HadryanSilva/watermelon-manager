@@ -9,6 +9,21 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "Purchase.withItems",
+                attributeNodes = {
+                        @NamedAttributeNode("items")
+                }
+        ),
+        @NamedEntityGraph(
+                name = "Purchase.full",
+                attributeNodes = {
+                        @NamedAttributeNode("account"),
+                        @NamedAttributeNode(value = "items")
+                }
+        )
+})
 public class Purchase {
 
     @Id

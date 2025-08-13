@@ -34,15 +34,15 @@ public class OrderService {
     }
 
     public Order findById(Long id) {
-        var orderFound = orderRepository.findById(id)
+        var order = orderRepository.findWithRelationsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", id));
 
-        var accountId = orderFound.getAccount().getId();
+        var accountId = order.getAccount().getId();
         if (!securityService.hasAccessToAccount(accountId)) {
             throw new AccessDeniedException("You don't have access to this order");
         }
 
-        return orderFound;
+        return order;
     }
 
     @Transactional

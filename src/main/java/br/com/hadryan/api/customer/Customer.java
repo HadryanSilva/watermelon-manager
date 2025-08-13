@@ -8,6 +8,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@NamedEntityGraphs({
+        @NamedEntityGraph(
+                name = "Customer.withOrders",
+                attributeNodes = @NamedAttributeNode("orders")
+        )
+})
 public class Customer {
 
     @Id

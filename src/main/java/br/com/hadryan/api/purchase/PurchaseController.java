@@ -27,11 +27,15 @@ public class PurchaseController {
 
     @GetMapping("/list")
     public ResponseEntity<Page<PurchaseResponse>> findAllByAccount(@RequestParam(defaultValue = "0") int page,
-                                                                   @RequestParam(defaultValue = "10") int size) {
-        var purchases = purchaseService.findAllByAccountId(PageRequest.of(page, size))
-                .map(purchaseMapper::purchaseToResponse);
+                                                                   @RequestParam(defaultValue = "10") int size,
+                                                                   @RequestParam(defaultValue = "false")
+                                                                       boolean includeProducts) {
+        Page<Purchase> purchases = includeProducts
+                ? purchaseService.findAllByAccountIdComplete(PageRequest.of(page, size))
+                : purchaseService.findAllByAccountId(PageRequest.of(page, size));
 
-        return ResponseEntity.ok(purchases);
+        var response = purchases.map(purchaseMapper::purchaseToResponse);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

@@ -10,11 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,20 +42,18 @@ public class PurchaseService {
 
     public Page<Purchase> findAllByAccountId(Pageable page) {
         var accountId = securityService.getCurrentAccountId();
-
         return purchaseRepository.findAllByAccountWithItems(page, accountId);
     }
 
+    public Page<Purchase> findAllByAccountIdComplete(Pageable page) {
+        var accountId = securityService.getCurrentAccountId();
+        return purchaseRepository.findAllByAccountWithItemsAndProducts(page, accountId);
+    }
+
     public Purchase findById(Long id) {
-        var purchase = purchaseRepository.findById(id)
+        var accountId = securityService.getCurrentAccountId();
+        return purchaseRepository.findFullPurchaseById(id, accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase", id));
-
-        var accountId = purchase.getAccount().getId();
-        if(securityService.hasAccessToAccount(accountId)) {
-            throw new AccessDeniedException("You don't have access to this purchase");
-        }
-
-        return purchase;
     }
 
     @Transactional
