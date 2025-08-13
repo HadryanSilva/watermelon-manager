@@ -17,7 +17,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     boolean existsByEmailAndIdNot(String email, Long id);
 
-    @Query("SELECT COUNT(o) > 0 FROM Order o WHERE o.customer.id = :customerId " +
+    @Query("SELECT COUNT(o) > 0 FROM orders o WHERE o.customer.id = :customerId " +
             "AND o.orderStatus IN ('RECEIVED', 'LOADED')")
     boolean hasActiveOrders(Long customerId);
 

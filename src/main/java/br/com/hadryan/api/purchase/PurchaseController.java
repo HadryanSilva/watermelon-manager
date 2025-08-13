@@ -16,14 +16,11 @@ public class PurchaseController {
 
     private final PurchaseService purchaseService;
     private final PurchaseMapper purchaseMapper;
-    private final ItemMapper itemMapper;
 
     public PurchaseController(PurchaseService purchaseService,
-                              PurchaseMapper purchaseMapper,
-                              ItemMapper itemMapper) {
+                              PurchaseMapper purchaseMapper) {
         this.purchaseService = purchaseService;
         this.purchaseMapper = purchaseMapper;
-        this.itemMapper = itemMapper;
     }
 
     @GetMapping("/list")
@@ -44,8 +41,8 @@ public class PurchaseController {
     @PostMapping
     public ResponseEntity<PurchaseResponse> save(@Valid @RequestBody PurchasePostRequest request) {
         var purchaseToSave = purchaseMapper.postToPurchase(request);
-        var purchaseItems = request.items().stream().map(itemMapper::dtoToItem).toList();
-        var purchaseSaved = purchaseService.save(purchaseItems, purchaseToSave);
+
+        var purchaseSaved = purchaseService.save(request.items(), purchaseToSave);
 
         return ResponseEntity
                 .created(URI.create("/api/v1/purchases/" + purchaseSaved.getId()))
