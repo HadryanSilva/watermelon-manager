@@ -10,8 +10,12 @@ import org.mapstruct.Mapping;
 public interface CustomerMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "account",  ignore = true)
+    @Mapping(target = "orders",  ignore = true)
     Customer postToCustomer(CustomerPostRequest request);
 
+    @Mapping(target = "account",  ignore = true)
+    @Mapping(target = "orders",  ignore = true)
     Customer putToCustomer(CustomerPutRequest request);
 
     CustomerResponse customerToResponse(Customer customer);

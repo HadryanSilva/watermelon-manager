@@ -11,6 +11,7 @@ public interface PurchaseMapper {
     @Mapping(target = "id",  ignore = true)
     @Mapping(target = "account",  ignore = true)
     @Mapping(target = "items", ignore = true)
+    @Mapping(target = "total",  ignore = true)
     Purchase postToPurchase(PurchasePostRequest request);
 
     PurchaseResponse purchaseToResponse(Purchase purchase);

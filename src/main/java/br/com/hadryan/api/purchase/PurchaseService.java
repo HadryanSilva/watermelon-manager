@@ -27,18 +27,15 @@ public class PurchaseService {
     private final ItemRepository itemRepository;
     private final ProductRepository productRepository;
     private final SecurityService securityService;
-    private final ItemMapper itemMapper;
 
     public PurchaseService(PurchaseRepository purchaseRepository,
                            ItemRepository itemRepository,
                            ProductRepository productRepository,
-                           SecurityService securityService,
-                           ItemMapper itemMapper) {
+                           SecurityService securityService) {
         this.purchaseRepository = purchaseRepository;
         this.itemRepository = itemRepository;
         this.productRepository = productRepository;
         this.securityService = securityService;
-        this.itemMapper = itemMapper;
     }
 
     public Page<Purchase> findAllByAccountId(Pageable page) {
@@ -60,7 +57,7 @@ public class PurchaseService {
     }
 
     @Transactional
-    public Purchase save(List<ItemDTO> items, Purchase purchase) {
+    public Purchase save(List<Item> items, Purchase purchase) {
         var account = securityService.getCurrentAccount();
         purchase.setAccount(account);
 
@@ -75,11 +72,11 @@ public class PurchaseService {
         return purchaseRepository.save(purchaseSaved);
     }
 
-    private List<Item> saveItems(List<ItemDTO> items, Purchase purchase) {
+    private List<Item> saveItems(List<Item> items, Purchase purchase) {
         log.info("Saving {} purchase items...", items.size());
 
         Set<Long> productIds = items.stream()
-                .map(ItemDTO::productId)
+                .map(item -> item.getProduct().getId())
                 .collect(Collectors.toSet());
 
         Map<Long, Product> productMap = productRepository.findAllById(productIds)
@@ -89,11 +86,9 @@ public class PurchaseService {
         validateAllProductsExist(productIds, productMap.keySet());
 
         List<Item> itemsToSave = items.stream()
-                .map(itemDTO -> {
-                    Item item = itemMapper.dtoToItem(itemDTO);
-                    item.setProduct(productMap.get(itemDTO.productId()));
+                .peek(item -> {
+                    item.setProduct(productMap.get(item.getProduct().getId()));
                     item.setPurchase(purchase);
-                    return item;
                 })
                 .collect(Collectors.toList());
 

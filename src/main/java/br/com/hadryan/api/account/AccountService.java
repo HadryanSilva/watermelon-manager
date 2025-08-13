@@ -1,5 +1,6 @@
 package br.com.hadryan.api.account;
 
+import br.com.hadryan.api.auth.service.SecurityService;
 import br.com.hadryan.api.transaction.TransactionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +14,12 @@ public class AccountService {
     private static final Logger log = LoggerFactory.getLogger(AccountService.class);
 
     private final AccountRepository accountRepository;
+    private final SecurityService securityService;
 
-    public AccountService(AccountRepository accountRepository) {
+    public AccountService(AccountRepository accountRepository,
+                          SecurityService securityService) {
         this.accountRepository = accountRepository;
+        this.securityService = securityService;
     }
 
     public Account findById(UUID id) {
@@ -37,8 +41,7 @@ public class AccountService {
 
     private void processAccountIncome(TransactionDTO transaction) {
         log.info("Transaction was identified as income, processing...");
-        var account = accountRepository.findById(transaction.accountId())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+        var account = securityService.getCurrentAccount();
         var amount = transaction.amount();
         account.setIncomes(account.getIncomes().add(amount));
         account.setBalance(account.getBalance().add(amount));
@@ -47,8 +50,7 @@ public class AccountService {
 
     private void processAccountExpense(TransactionDTO transaction) {
         log.info("Transaction was identified as expense, processing...");
-        var account = accountRepository.findById(transaction.accountId())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+        var account = securityService.getCurrentAccount();
         var amount = transaction.amount();
         account.setExpenses(account.getExpenses().add(amount));
         account.setBalance(account.getBalance().subtract(amount));
