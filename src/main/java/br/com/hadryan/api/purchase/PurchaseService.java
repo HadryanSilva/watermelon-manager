@@ -2,6 +2,7 @@ package br.com.hadryan.api.purchase;
 
 import br.com.hadryan.api.auth.service.SecurityService;
 import br.com.hadryan.api.exception.ResourceNotFoundException;
+import br.com.hadryan.api.product.Product;
 import br.com.hadryan.api.product.ProductRepository;
 import br.com.hadryan.api.purchase.enums.Status;
 import jakarta.transaction.Transactional;
@@ -11,8 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class PurchaseService {
@@ -52,21 +55,50 @@ public class PurchaseService {
 
         var savedItems = saveItems(items, purchaseSaved);
         purchaseSaved.setItems(savedItems);
-        return purchaseSaved;
+        purchaseSaved.setTotal(calculateTotal(savedItems));
+
+        return purchaseRepository.save(purchaseSaved);
     }
 
     private List<Item> saveItems(List<Item> items, Purchase purchase) {
-        log.info("Saving purchase items...");
-        List<Item> savedItems = new ArrayList<>();
-        items.forEach(item -> {
-            var product = productRepository.findById(item.getProduct().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product", item.getProduct().getId()));
-            item.setProduct(product);
-            item.setPurchase(purchase);
-            var itemSaved = itemRepository.save(item);
-            savedItems.add(itemSaved);
-        });
-        return savedItems;
+        log.info("Saving {} purchase items...", items.size());
+
+        Set<Long> productIds = items.stream()
+                .map(item -> item.getProduct().getId())
+                .collect(Collectors.toSet());
+
+        Map<Long, Product> productMap = productRepository.findAllById(productIds)
+                .stream()
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        validateAllProductsExist(productIds, productMap.keySet());
+
+        List<Item> itemsToSave = items.stream()
+                .peek(item -> {
+                    var product = productMap.get(item.getProduct().getId());
+                    item.setProduct(product);
+                    item.setPurchase(purchase);
+                })
+                .collect(Collectors.toList());
+
+        return itemRepository.saveAll(itemsToSave);
+    }
+
+    private void validateAllProductsExist(Set<Long> requestedIds, Set<Long> foundIds) {
+        var missingIds = requestedIds.stream()
+                .filter(id -> !foundIds.contains(id))
+                .collect(Collectors.toSet());
+
+        if (!missingIds.isEmpty()) {
+            throw new ResourceNotFoundException("Products not found: " + missingIds);
+        }
+    }
+
+    private BigDecimal calculateTotal(List<Item> items) {
+        return items.stream()
+                .map(Item::getTotalPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 }

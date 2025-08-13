@@ -1,9 +1,11 @@
 package br.com.hadryan.api.customer;
 
 import br.com.hadryan.api.account.Account;
+import br.com.hadryan.api.order.Order;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Customer {
@@ -23,6 +25,9 @@ public class Customer {
 
     @Column(length = 100)
     private String location;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Order> orders;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
@@ -74,6 +79,14 @@ public class Customer {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<Order> orders) {
+        this.orders = orders;
     }
 
     @Override

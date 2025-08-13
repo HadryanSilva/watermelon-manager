@@ -26,11 +26,6 @@ public class Field {
     @Enumerated(EnumType.STRING)
     private MeasureUnit measureUnit;
 
-    @Column(nullable = false)
-    private LocalDate startDate;
-
-    private LocalDate finishDate;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
@@ -73,22 +68,6 @@ public class Field {
 
     public void setMeasureUnit(MeasureUnit measureUnit) {
         this.measureUnit = measureUnit;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getFinishDate() {
-        return finishDate;
-    }
-
-    public void setFinishDate(LocalDate finishDate) {
-        this.finishDate = finishDate;
     }
 
     public Account getAccount() {

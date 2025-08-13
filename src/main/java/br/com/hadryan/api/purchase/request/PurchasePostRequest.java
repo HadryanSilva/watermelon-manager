@@ -16,13 +16,7 @@ public record PurchasePostRequest(
         String description,
 
         @NotNull
-        BigDecimal total,
-
-        @NotNull
         Status status,
-
-        @NotNull
-        Long accountId,
 
         @NotEmpty
         List<ItemDTO> items
