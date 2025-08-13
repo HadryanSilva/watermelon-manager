@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -47,8 +48,15 @@ public class PurchaseService {
     }
 
     public Purchase findById(Long id) {
-        return purchaseRepository.findById(id)
+        var purchase = purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase", id));
+
+        var accountId = purchase.getAccount().getId();
+        if(securityService.hasAccessToAccount(accountId)) {
+            throw new AccessDeniedException("You don't have access to this purchase");
+        }
+
+        return purchase;
     }
 
     @Transactional

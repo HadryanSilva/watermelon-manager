@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,8 +31,15 @@ public class VendorService {
     }
 
     public Vendor findById(Long id) {
-        return vendorRepository.findById(id)
+        var vendor = vendorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Vendor", id));
+
+        var accountId = securityService.getCurrentAccountId();
+        if (!securityService.hasAccessToAccount(accountId)) {
+            throw new AccessDeniedException("You don't have access to this vendor");
+        }
+
+        return vendor;
     }
 
     @Transactional

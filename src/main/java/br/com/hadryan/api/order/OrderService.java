@@ -7,6 +7,7 @@ import br.com.hadryan.api.field.FieldRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,8 +34,15 @@ public class OrderService {
     }
 
     public Order findById(Long id) {
-        return orderRepository.findById(id)
+        var orderFound = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", id));
+
+        var accountId = orderFound.getAccount().getId();
+        if (!securityService.hasAccessToAccount(accountId)) {
+            throw new AccessDeniedException("You don't have access to this order");
+        }
+
+        return orderFound;
     }
 
     @Transactional
@@ -48,7 +56,8 @@ public class OrderService {
 
         var  field = fieldRepository.findById(fieldId)
                 .orElseThrow(() -> new ResourceNotFoundException("Field", fieldId));
-
+        var account = securityService.getCurrentAccount();
+        order.setAccount(account);
         order.setField(field);
         return orderRepository.save(order);
     }

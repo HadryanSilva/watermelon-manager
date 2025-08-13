@@ -1,13 +1,12 @@
 package br.com.hadryan.api.transaction;
 
-import br.com.hadryan.api.account.AccountService;
+import br.com.hadryan.api.auth.service.SecurityService;
 import br.com.hadryan.api.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -16,25 +15,32 @@ public class TransactionService {
 
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TransactionRepository transactionRepository;
-    private final AccountService accountService;
+    private final SecurityService securityService;
     private final TransactionMapper transactionMapper;
 
     public TransactionService(TransactionRepository transactionRepository,
-                              AccountService accountService,
+                              SecurityService securityService,
                               ApplicationEventPublisher applicationEventPublisher, TransactionMapper transactionMapper) {
         this.transactionRepository = transactionRepository;
-        this.accountService = accountService;
+        this.securityService = securityService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.transactionMapper = transactionMapper;
     }
 
     public Transaction findById(Long id) {
-        return transactionRepository.findById(id)
+        var transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction", id));
+
+        var accountId = transaction.getAccount().getId();
+        if (!securityService.hasAccessToAccount(accountId)) {
+            throw new AccessDeniedException("You don't have access to this transaction");
+        }
+
+        return transaction;
     }
 
-    public Transaction save(UUID accountId, Transaction transaction) {
-        var account = accountService.findById(accountId);
+    public Transaction save(Transaction transaction) {
+        var account = securityService.getCurrentAccount();
         transaction.setAccount(account);
         var transactionSaved = transactionRepository.save(transaction);
         sendUpdateAccountEvent(transactionSaved);

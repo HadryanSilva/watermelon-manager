@@ -5,6 +5,7 @@ import br.com.hadryan.api.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,8 +26,15 @@ public class FieldService {
     }
 
     public Field getById(Long id) {
-        return fieldRepository.findById(id)
+        var field = fieldRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Field", id));
+
+        var accountId = field.getAccount().getId();
+        if (!securityService.hasAccessToAccount(accountId)) {
+            throw new AccessDeniedException("You don't have access to this field");
+        }
+
+        return field;
     }
 
     @Transactional

@@ -29,7 +29,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<TransactionResponse> create(@Valid @RequestBody TransactionPostRequest request) {
         var transactionToCreate = transactionMapper.postToTransaction(request);
-        var transactionCreated = transactionService.save(request.getAccountId(), transactionToCreate);
+        var transactionCreated = transactionService.save(transactionToCreate);
         return ResponseEntity
                 .created(URI.create("/api/v1/transactions/" + transactionCreated.getId()))
                 .body(transactionMapper.transactionToResponse(transactionCreated));
