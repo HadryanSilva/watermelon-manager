@@ -39,9 +39,6 @@ public class CustomerService {
         return customer;
     }
 
-    /**
-     * Lista customers apenas do Account do usuário atual
-     */
     public Page<Customer> findAllByCurrentAccount(Pageable pageable) {
         Account currentAccount = securityService.getCurrentAccount();
         log.debug("Listing customers for account: {}", currentAccount.getId());
