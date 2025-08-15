@@ -43,7 +43,7 @@ public class VendorController {
     }
 
     @PutMapping
-    public ResponseEntity<VendorResponse> update(VendorPutRequest request) {
+    public ResponseEntity<VendorResponse> update(@RequestBody VendorPutRequest request) {
         var vendorToUpdate = vendorMapper.putToVendor(request);
         var vendorUpdated = vendorService.update(vendorToUpdate);
         return ResponseEntity.ok(vendorMapper.vendorToResponse(vendorUpdated));

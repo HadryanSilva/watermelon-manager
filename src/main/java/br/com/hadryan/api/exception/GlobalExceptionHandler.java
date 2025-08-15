@@ -50,6 +50,7 @@ public class GlobalExceptionHandler {
         problemDetail.setTitle("Business Rule Violation");
         problemDetail.setType(URI.create("/errors/business-rule"));
         problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("path", request.getDescription(false));
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(problemDetail);
     }
@@ -121,6 +122,16 @@ public class GlobalExceptionHandler {
         );
         problemDetail.setTitle("Authentication Failed");
         problemDetail.setType(URI.create("/errors/bad-credentials"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problemDetail);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ProblemDetail> handleUnauthorized(UnauthorizedException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problemDetail.setTitle("Authentication Error");
+        problemDetail.setType(URI.create("/errors/authentication"));
         problemDetail.setProperty("timestamp", Instant.now());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problemDetail);
