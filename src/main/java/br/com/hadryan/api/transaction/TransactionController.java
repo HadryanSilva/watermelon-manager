@@ -3,6 +3,8 @@ package br.com.hadryan.api.transaction;
 import br.com.hadryan.api.transaction.request.TransactionPostRequest;
 import br.com.hadryan.api.transaction.response.TransactionResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,15 @@ public class TransactionController {
     public TransactionController(TransactionService transactionService,  TransactionMapper transactionMapper) {
         this.transactionService = transactionService;
         this.transactionMapper = transactionMapper;
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<TransactionResponse>> findAllByAccountId(@RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "10") int size) {
+        var transactions = transactionService.findAllByAccount(PageRequest.of(page, size))
+                .map(transactionMapper::transactionToResponse);
+
+        return ResponseEntity.ok(transactions);
     }
 
     @GetMapping("/{id}")

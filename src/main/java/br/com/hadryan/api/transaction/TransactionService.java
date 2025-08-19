@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,11 @@ public class TransactionService {
         this.securityService = securityService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.transactionMapper = transactionMapper;
+    }
+
+    public Page<Transaction> findAllByAccount(Pageable pageable) {
+        var accountId = securityService.getCurrentAccountId();
+        return transactionRepository.findAllByAccountId(pageable, accountId);
     }
 
     public Transaction findById(Long id) {
