@@ -1,5 +1,6 @@
 package br.com.hadryan.api.transaction;
 
+import br.com.hadryan.api.transaction.dto.TransactionDTO;
 import br.com.hadryan.api.transaction.request.TransactionPostRequest;
 import br.com.hadryan.api.transaction.response.TransactionResponse;
 import org.mapstruct.Mapper;
@@ -12,8 +13,10 @@ public interface TransactionMapper {
     @Mapping(target = "account", ignore = true)
     Transaction postToTransaction(TransactionPostRequest request);
 
-    TransactionResponse transactionToResponse(Transaction transaction);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "account", ignore = true)
+    Transaction dtoToTransaction(TransactionDTO dto);
 
-    TransactionDTO transactionToDTO(Transaction transaction);
+    TransactionResponse transactionToResponse(Transaction transaction);
 
 }

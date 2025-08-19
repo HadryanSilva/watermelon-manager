@@ -1,7 +1,7 @@
 package br.com.hadryan.api.account;
 
 import br.com.hadryan.api.auth.service.SecurityService;
-import br.com.hadryan.api.transaction.TransactionDTO;
+import br.com.hadryan.api.transaction.dto.UpdateAccountDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -31,15 +31,15 @@ public class AccountService {
     }
 
     @EventListener
-    public void updateAccountBalance(TransactionDTO transaction) {
+    public void updateAccountBalance(UpdateAccountDTO transaction) {
         log.info("Updating account balance...");
-        switch (transaction.type()) {
+        switch (transaction.transactionType()) {
             case INCOME -> processAccountIncome(transaction);
             case EXPENSE -> processAccountExpense(transaction);
         }
     }
 
-    private void processAccountIncome(TransactionDTO transaction) {
+    private void processAccountIncome(UpdateAccountDTO transaction) {
         log.info("Transaction was identified as income, processing...");
         var account = securityService.getCurrentAccount();
         var amount = transaction.amount();
@@ -48,7 +48,7 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-    private void processAccountExpense(TransactionDTO transaction) {
+    private void processAccountExpense(UpdateAccountDTO transaction) {
         log.info("Transaction was identified as expense, processing...");
         var account = securityService.getCurrentAccount();
         var amount = transaction.amount();

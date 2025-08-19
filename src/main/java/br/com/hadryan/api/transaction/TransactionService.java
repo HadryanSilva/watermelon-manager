@@ -2,9 +2,12 @@ package br.com.hadryan.api.transaction;
 
 import br.com.hadryan.api.auth.service.SecurityService;
 import br.com.hadryan.api.exception.ResourceNotFoundException;
+import br.com.hadryan.api.transaction.dto.TransactionDTO;
+import br.com.hadryan.api.transaction.dto.UpdateAccountDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +23,8 @@ public class TransactionService {
 
     public TransactionService(TransactionRepository transactionRepository,
                               SecurityService securityService,
-                              ApplicationEventPublisher applicationEventPublisher, TransactionMapper transactionMapper) {
+                              ApplicationEventPublisher applicationEventPublisher,
+                              TransactionMapper transactionMapper) {
         this.transactionRepository = transactionRepository;
         this.securityService = securityService;
         this.applicationEventPublisher = applicationEventPublisher;
@@ -47,9 +51,19 @@ public class TransactionService {
         return transactionSaved;
     }
 
+    @EventListener
+    public void saveTransactionAsync(TransactionDTO transaction) {
+        log.info("Saving transaction {}", transaction);
+        var account = securityService.getCurrentAccount();
+        var transactionToSave = transactionMapper.dtoToTransaction(transaction);
+        transactionToSave.setAccount(account);
+        var transactionSaved = transactionRepository.save(transactionToSave);
+        sendUpdateAccountEvent(transactionSaved);
+    }
+
     private void sendUpdateAccountEvent(Transaction transaction) {
         log.debug("Transaction saved, sending update account event...");
-        var dto = transactionMapper.transactionToDTO(transaction);
+        var dto = new UpdateAccountDTO(transaction.getType(), transaction.getAmount());
         applicationEventPublisher.publishEvent(dto);
     }
 

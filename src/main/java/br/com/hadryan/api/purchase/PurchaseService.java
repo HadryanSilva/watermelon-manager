@@ -5,14 +5,20 @@ import br.com.hadryan.api.exception.ResourceNotFoundException;
 import br.com.hadryan.api.product.Product;
 import br.com.hadryan.api.product.ProductRepository;
 import br.com.hadryan.api.purchase.enums.Status;
+import br.com.hadryan.api.transaction.dto.TransactionDTO;
+import br.com.hadryan.api.transaction.enums.Category;
+import br.com.hadryan.api.transaction.enums.Type;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,15 +31,18 @@ public class PurchaseService {
 
     private static final Logger log = LoggerFactory.getLogger(PurchaseService.class);
 
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final PurchaseRepository purchaseRepository;
     private final ItemRepository itemRepository;
     private final ProductRepository productRepository;
     private final SecurityService securityService;
 
-    public PurchaseService(PurchaseRepository purchaseRepository,
+    public PurchaseService(ApplicationEventPublisher applicationEventPublisher,
+                           PurchaseRepository purchaseRepository,
                            ItemRepository itemRepository,
                            ProductRepository productRepository,
                            SecurityService securityService) {
+        this.applicationEventPublisher = applicationEventPublisher;
         this.purchaseRepository = purchaseRepository;
         this.itemRepository = itemRepository;
         this.productRepository = productRepository;
@@ -70,6 +79,24 @@ public class PurchaseService {
         purchaseSaved.setTotal(calculateTotal(savedItems));
 
         return purchaseRepository.save(purchaseSaved);
+    }
+
+    public void update(Purchase purchase) {
+        var existentPurchase = findById(purchase.getId());
+
+        if (!securityService.hasAccessToAccount(existentPurchase.getAccount().getId())) {
+            throw new AccessDeniedException("You are not authorized to perform this action.");
+        }
+
+        existentPurchase.setName(purchase.getName());
+        existentPurchase.setDescription(purchase.getDescription());
+        existentPurchase.setStatus(purchase.getStatus());
+        if (purchase.getStatus().equals(Status.PAID)) {
+            existentPurchase.setStatus(purchase.getStatus());
+            sendSaveTransactionEvent(existentPurchase);
+        }
+
+        purchaseRepository.save(existentPurchase);
     }
 
     private List<Item> saveItems(List<Item> items, Purchase purchase) {
@@ -110,6 +137,19 @@ public class PurchaseService {
                 .map(Item::getTotalPrice)
                 .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private void sendSaveTransactionEvent(Purchase purchase) {
+        var dto = new TransactionDTO(
+            purchase.getName(),
+            purchase.getDescription(),
+            Type.EXPENSE,
+            Category.SUPPLIES,
+            purchase.getTotal(),
+            LocalDate.now()
+        );
+
+        applicationEventPublisher.publishEvent(dto);
     }
 
 }

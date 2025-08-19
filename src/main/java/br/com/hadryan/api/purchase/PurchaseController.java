@@ -1,6 +1,7 @@
 package br.com.hadryan.api.purchase;
 
 import br.com.hadryan.api.purchase.request.PurchasePostRequest;
+import br.com.hadryan.api.purchase.request.PurchasePutRequest;
 import br.com.hadryan.api.purchase.response.PurchaseResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -53,6 +54,13 @@ public class PurchaseController {
         return ResponseEntity
                 .created(URI.create("/api/v1/purchases/" + purchaseSaved.getId()))
                 .body(purchaseMapper.purchaseToResponse(purchaseSaved));
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> update(@RequestBody PurchasePutRequest request) {
+        var purchaseToUpdate = purchaseMapper.putToPurchase(request);
+        purchaseService.update(purchaseToUpdate);
+        return ResponseEntity.noContent().build();
     }
 
 }

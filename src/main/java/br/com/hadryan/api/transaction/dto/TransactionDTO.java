@@ -1,4 +1,4 @@
-package br.com.hadryan.api.transaction;
+package br.com.hadryan.api.transaction.dto;
 
 import br.com.hadryan.api.transaction.enums.Category;
 import br.com.hadryan.api.transaction.enums.Type;
@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record TransactionDTO(
-        Long id,
         String name,
         String description,
         Type type,
