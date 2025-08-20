@@ -1,6 +1,7 @@
 package br.com.hadryan.api.order;
 
 import br.com.hadryan.api.order.request.OrderPostRequest;
+import br.com.hadryan.api.order.request.OrderPutRequest;
 import br.com.hadryan.api.order.response.OrderResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,13 @@ public class OrderController {
         return ResponseEntity
                 .created(URI.create("/api/v1/orders/" + orderSaved.getId()))
                 .body(orderMapper.orderToResponse(orderSaved));
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> update(@Valid @RequestBody OrderPutRequest request) {
+        orderService.update(orderMapper.putToOrder(request));
+
+        return ResponseEntity.noContent().build();
     }
 
 }

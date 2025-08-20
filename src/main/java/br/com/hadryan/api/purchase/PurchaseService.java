@@ -5,9 +5,7 @@ import br.com.hadryan.api.exception.ResourceNotFoundException;
 import br.com.hadryan.api.product.Product;
 import br.com.hadryan.api.product.ProductRepository;
 import br.com.hadryan.api.purchase.enums.Status;
-import br.com.hadryan.api.transaction.dto.TransactionDTO;
-import br.com.hadryan.api.transaction.enums.Category;
-import br.com.hadryan.api.transaction.enums.Type;
+import br.com.hadryan.api.transaction.dto.TransactionDTOFactory;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -140,14 +137,7 @@ public class PurchaseService {
     }
 
     private void sendSaveTransactionEvent(Purchase purchase) {
-        var dto = new TransactionDTO(
-            purchase.getName(),
-            purchase.getDescription(),
-            Type.EXPENSE,
-            Category.SUPPLIES,
-            purchase.getTotal(),
-            LocalDate.now()
-        );
+        var dto = TransactionDTOFactory.createFromPurchase(purchase);
 
         applicationEventPublisher.publishEvent(dto);
     }
